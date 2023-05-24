@@ -42,6 +42,13 @@ def snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constrai
     return solution, sum(solution[k] * values[k] for k in solution.keys())
 
 # Tkinter GUI
+import tkinter as tk
+import re
+
+# Definición de funciones
+# [Coloca aquí las definiciones de funciones (sumaproducto, restricciones, snap_solved)]
+
+# Tkinter GUI
 def submit_button():
     cost_entries = list(map(int, ECosto.get().split()))
     weight_entries = list(map(int, Epeso.get().split()))
@@ -55,26 +62,37 @@ Greedy = tk.Tk()
 Greedy.geometry("900x600")
 Greedy.title("Greedy (Problema de la mochila binaria)")
 
-Titulo = tk.Label(Greedy, text="GREEDY", font=("Stencil", 34))
-Titulo.pack()
+Titulo = tk.Label(Greedy, text="GREEDY", font=("Stencil", 34), anchor="center")
+Titulo.place(x=360,y=10)
 
-ECosto = tk.Entry(Greedy)
-ECosto.pack()
+Titulo1 = tk.Label(Greedy, text="Problema de la mochila binaria", font=("Times New Roman", 14), anchor="e")
+Titulo1.place(x=330, y=60)
 
-Epeso = tk.Entry(Greedy)
-Epeso.pack()
+Texto= tk.Label(Greedy, text="Ingrese el costo de los elementos separados por espacio: [Ej: 7 8 1 2...]", font=("Times New Roman",12), anchor="w")
+Texto.place(x=30,y=100)
+ECosto = tk.Entry(Greedy, width=102, font=("Times New Roman",12))
+ECosto.place(x=33,y=135)
 
-EVmax = tk.Entry(Greedy)
-EVmax.pack()
+Texto = tk.Label(Greedy, text="Ingrese el peso de los elementos separados por espacio: [Ej: 6 10 4 3...]", font=("Times New Roman",12), anchor="w")
+Texto.place(x=30,y=170)
+Epeso = tk.Entry(Greedy, width=102, font=("Times New Roman",12))
+Epeso.place(x=33,y=200)
 
-Eres = tk.Entry(Greedy)
-Eres.pack()
+Texto = tk.Label(Greedy, text="Ingrese el volumen maximo de la mochila: ", font=("Times New Roman",12), anchor="w")
+Texto.place(x=30,y=240)
+EVmax = tk.Entry(Greedy, width=7, font=("Times New Roman",12))
+EVmax.place(x=290,y=243)
+
+Texto = tk.Label(Greedy, text="Ingrese el numero de restricciones:  ", font=("Times New Roman",12), anchor="w")
+Texto.place(x=30,y=290)
+Eres = tk.Entry(Greedy, width=7, font=("Times New Roman",12))
+Eres.place(x=250,y=293)
 
 submit_button = tk.Button(Greedy, text="Submit", command=submit_button)
-submit_button.pack()
+submit_button.place(x=400,y=400)
 
 solution_var = tk.StringVar()
 solution_label = tk.Label(Greedy, textvariable=solution_var)
-solution_label.pack()
+solution_label.place(x=400,y=450)
 
 Greedy.mainloop()
