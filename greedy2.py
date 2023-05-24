@@ -1,6 +1,6 @@
+import tkinter as tk
 import re
 
-# Definición de funciones -------------------------------
 def sumaproducto(v1, v2):
     if sum(v1[k] * v2[k] for k in v2.keys()) <= maxWeight:
         return True
@@ -9,210 +9,72 @@ def sumaproducto(v1, v2):
 
 def restricciones(s, restricciones):
     for i in restricciones:
-        
         if sum(s[k] * restricciones[i][k] for k in restricciones[i].keys()) <= valores[i]:
             return True
         else:
             return False
 
+def snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constraints):
+    values = {f'X{i+1}': cost for i, cost in enumerate(cost_entries)}
+    weight = {f'X{i+1}': w for i, w in enumerate(weight_entries)}
+    maxWeight = max_vol
+    Restricciones = constraints
+    valores = {i: r[-1] for i, r in enumerate(Restricciones)}
+    
+    vw = {key: round(values[key]/weight[key], 2) for key in values.keys()}
 
-# def parametro(v1, v2):
-#     if sum(v1[k] * v2[k] for k in v1.keys()) >= P:
-#         return True
-#     else:
-#         return False
-
-
-# Cuerpo del procedimiento ---------------------------------------
-if __name__ == "__main__":
-
-    # Recibiendo el costo
-    entrada = input("Ingrese el costo de los elementos separados por espacio: ").split()
-
-    values = {}
-    valores = {}
-
-    for i, costo in enumerate(entrada):
-        key = f'X{i+1}' 
-        values[key] = int(costo)
-
-
-    # Recibiendo el peso
-    entrada = input("Ingrese el peso de los elementos separados por espacio: ").split()
-
-    weight = {}
-
-    for i, peso in enumerate(entrada):
-        key = f'X{i+1}' 
-        weight[key] = int(peso)
-
-    # Recibiendo el peso máximo de la mochila
-    maxWeight = int(input("Ingrese el volumen máximo de la mochila: "))
-    # P = int(input("Ingrese el parámetro de parada: "))
-
-    ## Restricciones
-    ## Esta es para las restricciones
-    Restricciones = {}
-    NR = int(input("Ingrese el número de restricciones del problema: "))  # Número de restricciones del problema
-
-    for q in range(NR):
-        r2 = {}
-        for i in range(len(entrada)):
-            r2["X" + str(i + 1)] = 0
-
-        expresion = input("Ingresa una restricción (ej: 3X3 + 15X6 + 9X7 <= 15): ")
-
-        # Utilizar expresiones regulares para extraer los nombres de las variables y los coeficientes
-        matches = re.findall(r'([+-]?)(\d*)\s*([Xx]\d+)', expresion)
-
-        for match in matches:
-            signo = match[0]
-            numero = match[1]
-            variable = match[2]
-
-            if numero == "":
-                numero = "1"
-            if signo == "-":
-                numero = "-" + numero
-
-            r2[variable] = int(numero)  # Convertir el número a entero antes de guardar en el diccionario
-        
-        try:
-            leq_match = re.search(r'<=\s*(\d+)', expresion)
-            leq = int(leq_match.group(1))
-        except AttributeError:
-            leq = 0
-
-        valores[q]=leq 
-        Restricciones[q] = r2
-        
-
-    print(Restricciones)
-
-    # El método que usaremos será por mayor costo/peso
-    # Por eso, acá generamos la lista con este valor
-
-    vw = {}
-
-    for key in values.keys():
-        vw[key] = round(values[key]/weight[key], 2)
-
-
-    # # Imprimimos los diccionarios
-    print("\n\nProductos:\n")
-    print("Costo: ", values)
-    print("Peso: ", weight)
-    # print("Costo/Peso: ", vw)
-    # print("Restricción 1: ", r1)
-    # print("Restricción 2: ", r2)
-
-
-    # MAYOR COSTO/PESO ---------------------------------------------------------
-    # Ordenando de acuerdo al mayor costo/peso
     vw = dict(sorted(vw.items(), key=lambda x: x[1], reverse=True))
     values = dict(sorted(values.items(), key=lambda x: vw[x[0]], reverse=True))
     weight = dict(sorted(weight.items(), key=lambda x: vw[x[0]], reverse=True))
 
+    c = {key: 1 for key in vw.keys()}
+    s = {key: 0 for key in vw.keys()}
+    solution = {f"X{i+1}": 0 for i in range(len(cost_entries))}
 
-    # Conjunto candidatos
-    c = {}
-    for key in vw.keys():
-        c[key] = 1
-
-    # Conjunto de candidatos aceptados
-    s = {}
-    for key in vw.keys():
-        s[key] = 0
-
-    # Conjunto solución
-    solution = {}
-    for i in range(len(entrada)):
-        solution["X"+str(i+1)] = 0
-
-    # Algoritmo ------------------------------------
     for key in c.keys():
         c[key] = 0
         s[key] = 1
-
         if sumaproducto(weight, s) and restricciones(s, Restricciones):
             solution[key] = 1
         else:
             s[key] = 0
 
+    return solution, sum(solution[k] * values[k] for k in solution.keys())
 
-    # MAYOR COSTO ---------------------------------------------------------
-    # Ordenando de acuerdo al mayor costo
-    values1 = values
-    weight1 = weight
-    values1 = dict(sorted(values1.items(), key=lambda x: x[1], reverse=True))
-    weight1 = dict(sorted(weight1.items(), key=lambda x: values1[x[0]], reverse=True))
+# Tkinter GUI
+def submit_button():
+    cost_entries = list(map(int, ECosto.get().split()))
+    weight_entries = list(map(int, Epeso.get().split()))
+    max_vol = int(EVmax.get())
+    num_constraints = int(Eres.get())
+    constraints = []  # Aquí debes llenar las restricciones basado en tus entradas en la GUI
+    solution, max_cost = snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constraints)
+    solution_var.set(f"Solution: {solution}, Max cost: {max_cost}")
 
+Greedy = tk.Tk()
+Greedy.geometry("900x600")
+Greedy.title("Greedy (Problema de la mochila binaria)")
 
-    # Conjunto candidatos
-    c = {}
-    for key in values1.keys():
-        c[key] = 1
+Titulo = tk.Label(Greedy, text="GREEDY", font=("Stencil", 34))
+Titulo.pack()
 
-    # Conjunto de candidatos aceptados
-    s = {}
-    for key in values1.keys():
-        s[key] = 0
+ECosto = tk.Entry(Greedy)
+ECosto.pack()
 
-    # Conjunto solución
-    solution1 = {}
-    for i in range(len(entrada)):
-        solution1["X"+str(i+1)] = 0
+Epeso = tk.Entry(Greedy)
+Epeso.pack()
 
-    # Algoritmo ------------------------------------
-    for key in c.keys():
-        c[key] = 0
-        s[key] = 1
+EVmax = tk.Entry(Greedy)
+EVmax.pack()
 
-        if sumaproducto(weight, s) and restricciones(s, Restricciones):
-            solution1[key] = 1
-        else:
-            s[key] = 0
-    
-    if sum(solution[k] * values[k] for k in solution.keys()) < sum(solution1[k] * values[k] for k in solution1.keys()):
-        solution = solution1
+Eres = tk.Entry(Greedy)
+Eres.pack()
 
+submit_button = tk.Button(Greedy, text="Submit", command=submit_button)
+submit_button.pack()
 
-    # MENOR PESO ---------------------------------------------------------
-    # Ordenando de acuerdo al menor peso
-    values2 = values
-    weight2 = weight
-    weight2 = dict(sorted(weight2.items(), key=lambda x: x[1]))
-    values2 = dict(sorted(values2.items(), key=lambda x: weight2[x[0]], reverse=True))
+solution_var = tk.StringVar()
+solution_label = tk.Label(Greedy, textvariable=solution_var)
+solution_label.pack()
 
-
-    # Conjunto candidatos
-    c = {}
-    for key in weight2.keys():
-        c[key] = 1
-
-    # Conjunto de candidatos aceptados
-    s = {}
-    for key in weight2.keys():
-        s[key] = 0
-
-    # Conjunto solución
-    solution2 = {}
-    for i in range(len(entrada)):
-        solution2["X"+str(i+1)] = 0
-
-    # Algoritmo ------------------------------------
-    for key in c.keys():
-        c[key] = 0
-        s[key] = 1
-
-        if sumaproducto(weight, s) and restricciones(s, Restricciones):
-            solution2[key] = 1
-        else:
-            s[key] = 0
-    
-    if sum(solution[k] * values[k] for k in solution.keys()) < sum(solution2[k] * values[k] for k in solution2.keys()):
-        solution = solution2
-    
-    # Solución ------------------------------
-    print("\n\nSe encontró una solución óptima con el vector:", solution)
-    print("Con un costo máximo de:", sum(solution[k] * values[k] for k in solution.keys()))
+Greedy.mainloop()
