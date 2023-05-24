@@ -42,19 +42,12 @@ def snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constrai
     return solution, sum(solution[k] * values[k] for k in solution.keys())
 
 # Tkinter GUI
-import tkinter as tk
-import re
-
-# Definición de funciones
-# [Coloca aquí las definiciones de funciones (sumaproducto, restricciones, snap_solved)]
-
-# Tkinter GUI
 def submit_button():
     cost_entries = list(map(int, ECosto.get().split()))
     weight_entries = list(map(int, Epeso.get().split()))
     max_vol = int(EVmax.get())
     num_constraints = int(Eres.get())
-    constraints = []  # Aquí debes llenar las restricciones basado en tus entradas en la GUI
+    constraints = [list(map(int, entry.get().split())) for entry in constraint_entries]  # Extraer restricciones de los campos de entrada
     solution, max_cost = snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constraints)
     solution_var.set(f"Solution: {solution}, Max cost: {max_cost}")
 
@@ -87,6 +80,14 @@ Texto = tk.Label(Greedy, text="Ingrese el numero de restricciones:  ", font=("Ti
 Texto.place(x=30,y=290)
 Eres = tk.Entry(Greedy, width=7, font=("Times New Roman",12))
 Eres.place(x=250,y=293)
+
+constraint_entries = []
+for i in range(num_constraints):  # Añadir un campo de entrada para cada restricción
+    constraint_label = tk.Label(Greedy, text=f"Restricción {i+1}: ", font=("Times New Roman",12), anchor="w")
+    constraint_label.place(x=30, y=330+i*30)
+    constraint_entry = tk.Entry(Greedy, width=102, font=("Times New Roman",12))
+    constraint_entry.place(x=33, y=360+i*30)
+    constraint_entries.append(constraint_entry)
 
 submit_button = tk.Button(Greedy, text="Submit", command=submit_button)
 submit_button.place(x=400,y=400)
