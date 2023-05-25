@@ -112,6 +112,6 @@ submit_button.place(x=400,y=750)
 
 solution_var = tk.StringVar()
 solution_label = tk.Label(Greedy, textvariable=solution_var)
-solution_label.place(x=400,y=450)
+solution_label.place(x=200,y=450)
 
 Greedy.mainloop()
