@@ -70,7 +70,7 @@ def submit_button():
     max_vol = int(EVmax.get())
     constraints = [parse_constraint(entry.get()) for entry in constraint_entries]
     solution, max_cost = snap_solved(cost_entries, weight_entries, max_vol, constraints)
-    solution_var.set(f"Solution: {solution}, Max cost: {max_cost}")
+    solution_var.set(f"Solucion: {solution}, Costo maximo: {max_cost}")
 
 Greedy = tk.Tk()
 Greedy.geometry("900x900")
@@ -112,6 +112,6 @@ submit_button.place(x=400,y=750)
 
 solution_var = tk.StringVar()
 solution_label = tk.Label(Greedy, textvariable=solution_var)
-solution_label.place(x=200,y=450)
+solution_label.place(x=200,y=780)
 
 Greedy.mainloop()
