@@ -61,7 +61,7 @@ def submit_button():
     solution_var.set(f"Solution: {solution}, Max cost: {max_cost}")
 
 Greedy = tk.Tk()
-Greedy.geometry("900x600")
+Greedy.geometry("900x900")
 Greedy.title("Greedy (Problema de la mochila binaria)")
 
 Titulo = tk.Label(Greedy, text="GREEDY", font=("Stencil", 34), anchor="center")
