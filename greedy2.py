@@ -46,8 +46,8 @@ def generate_constraint_entries():
     for i in range(num_constraints):
         constraint_label = tk.Label(Greedy, text=f"Restricción {i+1}: ", font=("Times New Roman",12), anchor="w")
         constraint_label.place(x=30, y=330+i*30)
-        constraint_entry = tk.Entry(Greedy, width=102, font=("Times New Roman",12))
-        constraint_entry.place(x=33, y=360+i*30)
+        constraint_entry = tk.Entry(Greedy, width=91, font=("Times New Roman",12))
+        constraint_entry.place(x=120, y=330+i*30)
         constraint_entries.append(constraint_entry)
 
 # Tkinter GUI
@@ -96,7 +96,7 @@ Eres_button.place(x=400,y=293)
 constraint_entries = []
 
 submit_button = tk.Button(Greedy, text="Submit", command=submit_button)
-submit_button.place(x=400,y=400)
+submit_button.place(x=400,y=750)
 
 solution_var = tk.StringVar()
 solution_label = tk.Label(Greedy, textvariable=solution_var)
