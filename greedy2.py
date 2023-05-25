@@ -1,26 +1,40 @@
 import tkinter as tk
 import re
 
+def parse_constraint(constraint_str):
+    terms = constraint_str.split("+")
+    coeff_dict = {}
+    value = 0
+    for term in terms:
+        term = term.strip()
+        if "<=" in term:
+            value = int(term.split("<=")[1].strip())
+        else:
+            coeff, variable = re.match(r'(\d*)X(\d*)', term).groups()
+            coeff_dict[f'X{variable}'] = int(coeff)
+    return coeff_dict, value
+
 def sumaproducto(v1, v2, maxWeight):
-    if sum(v1[k] * v2[k] for k in v2.keys()) <= maxWeight:
+    if sum(v1.get(k, 0) * v2.get(k, 0) for k in set(v1.keys()).union(v2.keys())) <= maxWeight:
         return True
     else:
         return False
 
 def restricciones(s, restricciones, valores):
-    for i in restricciones:
-        if sum(s[k] * restricciones[i][k] for k in restricciones[i].keys()) <= valores[i]:
-            return True
+    for i, restriccion in enumerate(restricciones):
+        if sumaproducto(s, restriccion, valores[i]):
+            continue
         else:
             return False
+    return True
 
-def snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constraints):
+def snap_solved(cost_entries, weight_entries, max_vol, constraints):
     values = {f'X{i+1}': cost for i, cost in enumerate(cost_entries)}
     weight = {f'X{i+1}': w for i, w in enumerate(weight_entries)}
     maxWeight = max_vol
-    Restricciones = constraints
-    valores = {i: r[-1] for i, r in enumerate(Restricciones)}
-    
+    Restricciones = [r[0] for r in constraints]
+    valores = [r[1] for r in constraints]
+
     vw = {key: round(values[key]/weight[key], 2) for key in values.keys()}
 
     vw = dict(sorted(vw.items(), key=lambda x: x[1], reverse=True))
@@ -50,14 +64,12 @@ def generate_constraint_entries():
         constraint_entry.place(x=120, y=330+i*30)
         constraint_entries.append(constraint_entry)
 
-# Tkinter GUI
 def submit_button():
     cost_entries = list(map(int, ECosto.get().split()))
     weight_entries = list(map(int, Epeso.get().split()))
     max_vol = int(EVmax.get())
-    num_constraints = int(Eres.get())
-    constraints = [list(map(int, entry.get().split())) for entry in constraint_entries]  # Extraer restricciones de los campos de entrada
-    solution, max_cost = snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constraints)
+    constraints = [parse_constraint(entry.get()) for entry in constraint_entries]
+    solution, max_cost = snap_solved(cost_entries, weight_entries, max_vol, constraints)
     solution_var.set(f"Solution: {solution}, Max cost: {max_cost}")
 
 Greedy = tk.Tk()
