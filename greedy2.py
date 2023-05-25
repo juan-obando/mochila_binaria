@@ -1,13 +1,13 @@
 import tkinter as tk
 import re
 
-def sumaproducto(v1, v2):
+def sumaproducto(v1, v2, maxWeight):
     if sum(v1[k] * v2[k] for k in v2.keys()) <= maxWeight:
         return True
     else:
         return False
 
-def restricciones(s, restricciones):
+def restricciones(s, restricciones, valores):
     for i in restricciones:
         if sum(s[k] * restricciones[i][k] for k in restricciones[i].keys()) <= valores[i]:
             return True
@@ -34,12 +34,21 @@ def snap_solved(cost_entries, weight_entries, max_vol, num_constraints, constrai
     for key in c.keys():
         c[key] = 0
         s[key] = 1
-        if sumaproducto(weight, s) and restricciones(s, Restricciones):
+        if sumaproducto(weight, s, maxWeight) and restricciones(s, Restricciones, valores):
             solution[key] = 1
         else:
             s[key] = 0
 
     return solution, sum(solution[k] * values[k] for k in solution.keys())
+
+def generate_constraint_entries():
+    num_constraints = int(Eres.get())
+    for i in range(num_constraints):
+        constraint_label = tk.Label(Greedy, text=f"Restricción {i+1}: ", font=("Times New Roman",12), anchor="w")
+        constraint_label.place(x=30, y=330+i*30)
+        constraint_entry = tk.Entry(Greedy, width=102, font=("Times New Roman",12))
+        constraint_entry.place(x=33, y=360+i*30)
+        constraint_entries.append(constraint_entry)
 
 # Tkinter GUI
 def submit_button():
@@ -81,13 +90,10 @@ Texto.place(x=30,y=290)
 Eres = tk.Entry(Greedy, width=7, font=("Times New Roman",12))
 Eres.place(x=250,y=293)
 
+Eres_button = tk.Button(Greedy, text="Generar campos de restricciones", command=generate_constraint_entries)
+Eres_button.place(x=400,y=293)
+
 constraint_entries = []
-for i in range(num_constraints):  # Añadir un campo de entrada para cada restricción
-    constraint_label = tk.Label(Greedy, text=f"Restricción {i+1}: ", font=("Times New Roman",12), anchor="w")
-    constraint_label.place(x=30, y=330+i*30)
-    constraint_entry = tk.Entry(Greedy, width=102, font=("Times New Roman",12))
-    constraint_entry.place(x=33, y=360+i*30)
-    constraint_entries.append(constraint_entry)
 
 submit_button = tk.Button(Greedy, text="Submit", command=submit_button)
 submit_button.place(x=400,y=400)
