@@ -2,6 +2,10 @@ import tkinter as tk
 import re
 
 def parse_constraint(constraint_str):
+    """
+    Esta función se encarga de dividir las restricciones dadas por el usuario en el programa.
+    Las restricciones se dan en el formato "3X3 + 15X6 + 9X7 <= 15".
+    """
     terms = constraint_str.split("+")
     coeff_dict = {}
     value = 0
@@ -15,12 +19,18 @@ def parse_constraint(constraint_str):
     return coeff_dict, value
 
 def sumaproducto(v1, v2, maxWeight):
+    """
+    Esta función calcula la suma de productos de dos vectores y verifica si es menor o igual a un peso máximo.
+    """
     if sum(v1.get(k, 0) * v2.get(k, 0) for k in set(v1.keys()).union(v2.keys())) <= maxWeight:
         return True
     else:
         return False
 
 def restricciones(s, restricciones, valores):
+    """
+    Esta función verifica si una solución dada s cumple con todas las restricciones.
+    """
     for i, restriccion in enumerate(restricciones):
         if sumaproducto(s, restriccion, valores[i]):
             continue
@@ -29,6 +39,9 @@ def restricciones(s, restricciones, valores):
     return True
 
 def snap_solved(cost_entries, weight_entries, max_vol, constraints):
+    """
+    Esta es la función principal que resuelve el problema de la mochila.
+    """
     values = {f'X{i+1}': cost for i, cost in enumerate(cost_entries)}
     weight = {f'X{i+1}': w for i, w in enumerate(weight_entries)}
     maxWeight = max_vol
@@ -56,6 +69,9 @@ def snap_solved(cost_entries, weight_entries, max_vol, constraints):
     return solution, sum(solution[k] * values[k] for k in solution.keys())
 
 def generate_constraint_entries():
+    """
+    Esta función se encarga de generar las entradas de restricciones en la interfaz de usuario.
+    """
     num_constraints = int(Eres.get())
     for i in range(num_constraints):
         constraint_label = tk.Label(Greedy, text=f"Restricción {i+1}: ", font=("Times New Roman",12), anchor="w")
@@ -65,6 +81,10 @@ def generate_constraint_entries():
         constraint_entries.append(constraint_entry)
 
 def submit_button():
+    """
+    Esta función es llamada cuando el usuario presiona el botón de enviar.
+    Toma las entradas del usuario y las pasa a la función de resolución del problema de la mochila.
+    """
     cost_entries = list(map(int, ECosto.get().split()))
     weight_entries = list(map(int, Epeso.get().split()))
     max_vol = int(EVmax.get())
@@ -75,6 +95,9 @@ def submit_button():
 Greedy = tk.Tk()
 Greedy.geometry("900x900")
 Greedy.title("Greedy (Problema de la mochila binaria)")
+
+# Aquí se configura la interfaz de usuario.
+# Se crean y se colocan los widgets necesarios.
 
 Titulo = tk.Label(Greedy, text="GREEDY", font=("Stencil", 34), anchor="center")
 Titulo.place(x=360,y=10)
