@@ -2,10 +2,6 @@ import tkinter as tk
 import re
 
 def parse_constraint(constraint_str):
-    """
-    Esta función se encarga de dividir las restricciones dadas por el usuario en el programa.
-    Las restricciones se dan en el formato "3X3 + 15X6 + 9X7 <= 15".
-    """
     terms = constraint_str.split("+")
     coeff_dict = {}
     value = 0
@@ -19,29 +15,20 @@ def parse_constraint(constraint_str):
     return coeff_dict, value
 
 def sumaproducto(v1, v2, maxWeight):
-    """
-    Esta función calcula la suma de productos de dos vectores y verifica si es menor o igual a un peso máximo.
-    """
     if sum(v1.get(k, 0) * v2.get(k, 0) for k in set(v1.keys()).union(v2.keys())) <= maxWeight:
         return True
     else:
         return False
 
 def restricciones(s, restricciones, valores):
-    """
-    Esta función verifica si una solución dada s cumple con todas las restricciones.
-    """
     for i, restriccion in enumerate(restricciones):
-        if sumaproducto(s, restriccion, valores[i]):
+        if sum(s.get(k, 0) * restriccion.get(k, 0) for k in set(s.keys()).union(restriccion.keys())) <= valores[i]:
             continue
         else:
             return False
     return True
 
 def snap_solved(cost_entries, weight_entries, max_vol, constraints):
-    """
-    Esta es la función principal que resuelve el problema de la mochila.
-    """
     values = {f'X{i+1}': cost for i, cost in enumerate(cost_entries)}
     weight = {f'X{i+1}': w for i, w in enumerate(weight_entries)}
     maxWeight = max_vol
@@ -49,7 +36,6 @@ def snap_solved(cost_entries, weight_entries, max_vol, constraints):
     valores = [r[1] for r in constraints]
 
     vw = {key: round(values[key]/weight[key], 2) for key in values.keys()}
-
     vw = dict(sorted(vw.items(), key=lambda x: x[1], reverse=True))
     values = dict(sorted(values.items(), key=lambda x: vw[x[0]], reverse=True))
     weight = dict(sorted(weight.items(), key=lambda x: vw[x[0]], reverse=True))
@@ -66,7 +52,50 @@ def snap_solved(cost_entries, weight_entries, max_vol, constraints):
         else:
             s[key] = 0
 
-    return solution, sum(solution[k] * values[k] for k in solution.keys())
+    max_cost = sum(solution[k] * values[k] for k in solution.keys())
+    
+    # MAYOR COSTO 
+    values1 = dict(sorted(values.items(), key=lambda x: x[1], reverse=True))
+    weight1 = dict(sorted(weight.items(), key=lambda x: values1[x[0]], reverse=True))
+    c1 = c
+    s1 = s
+    solution1 = solution
+
+    for key in c1.keys():
+        c1[key] = 0
+        s1[key] = 1
+        if sumaproducto(weight1, s1, maxWeight) and restricciones(s1, Restricciones, valores):
+            solution1[key] = 1
+        else:
+            s1[key] = 0
+
+    max_cost1 = sum(solution1[k] * values1[k] for k in solution1.keys())
+    
+    # MENOR PESO
+    values2 = dict(sorted(values.items(), key=lambda x: weight[x[0]]))
+    weight2 = dict(sorted(weight.items(), key=lambda x: weight[x[0]]))
+    c2 = c
+    s2 = s
+    solution2 = solution
+
+    for key in c2.keys():
+        c2[key] = 0
+        s2[key] = 1
+        if sumaproducto(weight2, s2, maxWeight) and restricciones(s2, Restricciones, valores):
+            solution2[key] = 1
+        else:
+            s2[key] = 0
+
+    max_cost2 = sum(solution2[k] * values2[k] for k in solution2.keys())
+    
+    if max_cost >= max_cost1 and max_cost >= max_cost2:
+        return solution
+    elif max_cost1 >= max_cost and max_cost1 >= max_cost2:
+        return solution1
+    else:
+        return solution2
+
+
 
 def generate_constraint_entries():
     """
